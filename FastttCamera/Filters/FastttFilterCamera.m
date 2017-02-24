@@ -117,6 +117,25 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+
+#pragma mark Public API
+
+-(void)forceLayout {
+    _previewView.frame = self.view.bounds;
+    [self _removePreviewLayer];
+    [self _insertPreviewLayer];
+}
+
+-(UIImage *)snapshotPreviewImage {
+    
+    [self.fastFilter.filter useNextFrameForImageCapture];
+    CGImageRef imageRef = CGImageRetain([self.fastFilter.filter newCGImageFromCurrentlyProcessedOutput]);
+    UIImage *image = [[UIImage alloc] initWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    return image;
+
+}
+
 #pragma mark - View Events
 
 - (void)viewDidLoad
@@ -144,6 +163,10 @@
     if (!self.handlesZoom) {
         self.fastZoom.detectsPinch = NO;
     }
+
+    // Prealloc the plain filter
+    [self fastFilter];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -155,6 +178,10 @@
     [self _insertPreviewLayer];
     
     [self _setPreviewVideoOrientation];
+    
+    // Prealloc the plain filter
+    [self fastFilter];
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -367,6 +394,13 @@
     [self _insertPreviewLayer];
 }
 
+- (void)setOverlayImage:(UIImage *)overlayImage
+{
+    _fastFilter = [FastttFilter filterWithOverlayImage:overlayImage frame:_previewView.frame];
+    _overlayImage = overlayImage;
+    [self _insertPreviewLayer];
+}
+
 #pragma mark - Capture Session Management
 
 - (void)startRunning
@@ -400,6 +434,8 @@
     
     [_stillCamera removeAllTargets];
     [self.fastFilter.filter removeAllTargets];
+    
+    //[_stillCamera forceProcessingAtSizeRespectingAspectRatio:self.view.bounds.size];
     
     [_stillCamera addTarget:self.fastFilter.filter];
     [self.fastFilter.filter addTarget:_previewView];
@@ -541,6 +577,7 @@
     CGRect cropRect = CGRectNull;
     if (self.cropsImageToVisibleAspectRatio) {
         cropRect = [image fastttCropRectFromPreviewBounds:_previewView.frame];
+        
     }
     
     [self _processImage:image withCropRect:cropRect maxDimension:self.maxScaledDimension fromCamera:YES needsPreviewRotation:(needsPreviewRotation || !self.interfaceRotatesWithOrientation) imageOrientation:imageOrientation previewOrientation:previewOrientation];

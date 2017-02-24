@@ -546,6 +546,10 @@
              
              UIImage *image = [UIImage imageWithData:imageData];
              
+             if ([self.delegate respondsToSelector:@selector(cameraController:didFinishCapturingImageData:)]) {
+                 [self.delegate cameraController:self didFinishCapturingImageData:imageData];
+             }
+             
              [self _processCameraPhoto:image needsPreviewRotation:needsPreviewRotation previewOrientation:previewOrientation];
          });
      }];

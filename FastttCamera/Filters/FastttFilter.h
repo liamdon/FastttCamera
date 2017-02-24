@@ -19,6 +19,10 @@
 
 + (instancetype)filterWithLookupImage:(UIImage *)lookupImage;
 
++ (instancetype)filterWithOverlayImage:(UIImage *)overlayImage;
+
++ (instancetype)filterWithOverlayImage:(UIImage *)overlayImage frame:(CGRect)frame;
+
 + (instancetype)plainFilter;
 
 @end

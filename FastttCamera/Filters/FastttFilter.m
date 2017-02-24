@@ -9,6 +9,7 @@
 #import "FastttFilter.h"
 #import <GPUImage/GPUImageFilterGroup.h>
 #import "FastttLookupFilter.h"
+#import "FastttOverlayFilter.h"
 #import "FastttEmptyFilter.h"
 
 @interface FastttFilter ()
@@ -18,6 +19,26 @@
 @end
 
 @implementation FastttFilter
+
++ (instancetype)filterWithOverlayImage:(UIImage *)overlayImage
+{
+    return [self filterWithOverlayImage:overlayImage frame:CGRectNull];
+}
+
++ (instancetype)filterWithOverlayImage:(UIImage *)overlayImage frame:(CGRect)frame
+{
+    FastttFilter *fastFilter = [[self alloc] init];
+    
+    if (overlayImage) {
+        FastttOverlayFilter *overlayFilter = [[FastttOverlayFilter alloc] initWithOverlayImage:overlayImage frame:frame];
+        fastFilter.filter = overlayFilter;
+    } else {
+        FastttEmptyFilter *emptyFilter = [[FastttEmptyFilter alloc] init];
+        fastFilter.filter = emptyFilter;
+    }
+    
+    return fastFilter;
+}
 
 + (instancetype)filterWithLookupImage:(UIImage *)lookupImage
 {

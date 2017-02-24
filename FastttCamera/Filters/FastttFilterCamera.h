@@ -37,6 +37,13 @@
 @property (nonatomic, strong) UIImage *filterImage;
 
 /**
+ *  The current overlay image
+ *
+ *  @note Setting this property to nil will leave a plain, unfiltered camera.
+ */
+@property (nonatomic, strong) UIImage *overlayImage;
+
+/**
  *  Returns an instance of FastttFilterCamera with the given lookup image applied to both the camera's live
  *  preview and any captured images.
  *
@@ -50,5 +57,11 @@
  *  @return An instance of FastttFilterCamera.
  */
 + (instancetype)cameraWithFilterImage:(UIImage *)filterImage;
+
+- (void)setFilterImage:(UIImage *)filterImage;
+
+-(UIImage *)snapshotPreviewImage;
+
+-(void) forceLayout;
 
 @end
